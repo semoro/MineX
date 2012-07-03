@@ -1,0 +1,7 @@
+drive=drive or {}
+modem=modem or {}
+MineX.var={}
+MineX.math={}
+MineX.gui={}
+MineX.program={}
+MineX.util={}

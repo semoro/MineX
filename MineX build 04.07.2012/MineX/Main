@@ -1,0 +1,1 @@
+function MineX.main()MineX.gui.panel.desktop()endterm.clear()term.setCursorPos( 1, 1 )MineX.main()sleep(15)os.reboot()

@@ -1,0 +1,238 @@
+function MineX.util.findfromback(arg,w)
+for n = 1,#arg do
+local a=#arg-n
+if string.sub (arg, a,a+#w-1)==w then
+return a;
+end
+end
+end
+
+
+
+
+function MineX.gui.panel.fspath(path)
+local drop=""
+local a,b = term.getSize()
+path=string.sub(path,2)
+
+path=string.gsub (path, " ", "")
+
+path="C:\\"..path.."\\"
+local lenpath=#path
+for n=1,(a/2-math.ceil((lenpath)/2)) do
+drop=drop.."-"
+end
+
+drop=drop..path
+for n=1,(a/2-math.floor((lenpath)/2)) do
+drop=drop.."-"
+end
+
+return drop;
+
+end
+
+-- function MineX.gui.createNew(path)
+-- local function Folder (path)
+-- local name=""
+-- MineX.gui.panel.time()
+-- term.clear()
+-- print("Введите название папки")
+
+-- repeat
+-- repeat
+
+-- MineX.gui.panel.time()
+
+-- os.startTimer(0.7)
+
+-- local a,b=os.pullEvent()
+-- MineX.var.enterevent=b
+-- until a=="key"
+-- term.clear()
+-- MineX.gui.panel.time()
+-- print("Введите название папки")
+-- term.setCursorPos(1,3)
+
+-- local c,d=os.pullEvent("char")
+-- if MineX.var.enterevent==14 then
+-- name=string.sub(name,1,#name-1)
+-- elseif MineX.var.enterevent~=14 then
+-- name=name..d
+-- end
+
+-- io.write(name)
+-- until MineX.var.enterevent==28
+ 
+-- local sNewDir = shell.resolve( path.."\\"..name )
+-- fs.makeDir( sNewDir )
+-- end
+-- MineX.gui.selectorOpen(1,4)
+-- MineX.gui.menu.h("createNew")
+-- MineX.gui.menu.button("createNew","FILE")
+-- MineX.gui.menu.button("createNew","FOLDER")
+-- MineX.gui.menu.button("createNew","PASTE")
+-- MineX.gui.menu.button("createNew","<BACK>")
+
+-- MineX.gui.panel.time()
+-- MineX.gui.panel.fspath(path)
+-- term.clear()
+-- print(MineX.gui.panel.fspath(path))
+-- print("Что создаём?")
+-- MineX.gui.menu.print("createNew")
+-- repeat
+-- repeat
+-- MineX.gui.panel.time()
+
+-- os.startTimer(0.7)
+
+-- local a,b=os.pullEvent()
+-- MineX.var.enterevent=b
+-- until a=="key"
+-- MineX.gui.selector(MineX.var.enterevent)
+-- MineX.gui.menu.print("createNew")
+
+-- until MineX.var.enterevent==28
+
+-- MineX.var.enterevent=0
+-- if MineX.gui.selectorTableCurrent[2]==1 then
+-- Folder(path)
+-- end
+
+-- end
+
+
+function MineX.gui.fs(path)
+-- Get all the files in the directory
+local sDir = shell.dir()
+if path ~= nil then
+	sDir = shell.resolve( path )
+end
+
+-- Sort into dirs/files, and calculate column count
+local tAll = fs.list( sDir )
+local tFiles = {}
+local tDirs = {}
+
+for n, sItem in pairs( tAll ) do
+	if string.sub( sItem, 1, 1 ) ~= "." then
+		local sPath = fs.combine( sDir, sItem )
+		if fs.isDir( sPath ) then
+			table.insert( tDirs, sItem )
+		else
+			table.insert( tFiles, sItem )
+		end
+	end
+end
+table.sort( tDirs )
+table.sort( tFiles )
+-------------------------------------------------------------------------------------
+local function DelitePress(arg)
+fs.delete(arg)
+sleep(0.1)
+MineX.gui.fs(path)
+end
+-------------------------------------------------------------------------------------
+MineX.gui.selectorOpen(#tDirs+#tFiles+1,2)
+local x,y = term.getSize()
+MineX.gui.menu.v("FS",y-5)
+
+MineX.gui.menu.h("FILE")
+for n=1,(#tDirs+#tFiles+1) do
+if n>#tDirs then
+MineX.gui.menu.button("FS",tFiles[n-#tDirs])
+else
+MineX.gui.menu.button("FS",tDirs[n])
+end
+end
+if #tDirs>=1 then
+MineX.gui.menu.h("DIR")
+MineX.gui.menu.button("DIR","DELITE",DelitePress,path.."\\"..tDirs[1])
+
+end
+MineX.gui.menu.button("FS","<BACK>")
+
+MineX.var.enterevent=0
+
+MineX.gui.panel.time()
+term.clear()
+term.setCursorPos(1,1)
+print(MineX.gui.panel.fspath(path))
+
+
+MineX.gui.menu.print("FS")
+
+local x,y = term.getSize()
+
+
+
+repeat
+repeat
+
+MineX.gui.panel.time()
+
+os.startTimer(0.7)
+
+local a,b=os.pullEvent()
+MineX.var.enterevent=b
+
+until a=="key"
+
+term.clear()
+term.setCursorPos(1,1)
+print(MineX.gui.panel.fspath(path))
+
+MineX.gui.selector(MineX.var.enterevent)
+
+MineX.gui.menu.print("FS")
+
+local x,y = term.getSize()
+
+term.setCursorPos(1,y)
+
+if MineX.gui.selectorTableCurrent[1]<=#tDirs then
+MineX.gui.menu.h("DIR")
+MineX.gui.menu.button("DIR","DELITE",DelitePress,path.."\\"..tDirs[MineX.gui.selectorTableCurrent[1]])
+write(MineX.gui.menu.get("DIR"))
+if MineX.var.enterevent==29 then
+MineX.gui.menu.buttonPress("DIR")
+end
+
+else
+
+end
+
+until MineX.var.enterevent==28
+
+if MineX.gui.selectorTableCurrent[1]==#tDirs+#tFiles+1 then
+if path~="C" then
+
+
+MineX.gui.fs(string.sub (path, 1,MineX.util.findfromback(path,"\\")-1))
+else
+
+MineX.gui.window.mycomp()
+end
+else
+
+if MineX.gui.selectorTableCurrent[1]>#tDirs then
+MineX.gui.edit(path.."\\"..tFiles[MineX.gui.selectorTableCurrent[1]-#tDirs])
+MineX.gui.fs(path)
+else
+MineX.gui.fs(path.."\\"..tDirs[MineX.gui.selectorTableCurrent[1]])
+end
+end
+
+end
+
+
+
+
+
+
+
+
+
+
+
+

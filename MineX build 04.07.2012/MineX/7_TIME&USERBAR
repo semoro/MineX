@@ -1,0 +1,1 @@
+MineX.gui.panel={}function MineX.gui.panel.time()term.setCursorPos(1,1)term.clearLine()print("Time is "..textutils.formatTime(os.time()))end

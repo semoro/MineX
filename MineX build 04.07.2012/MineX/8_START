@@ -1,0 +1,112 @@
+MineX.gui.window={}
+
+function MineX.gui.panel.window()
+local drop=""
+local a,b = term.getSize()
+for n=1,a do
+drop=drop.."-"
+end
+return drop;
+end
+
+------------------------------------------------------------------------------------------
+
+function MineX.gui.window.mystart()
+MineX.gui.selectorOpen(4,1)
+MineX.var.enterevent=0
+MineX.gui.menu.v("START")
+MineX.gui.menu.button("START","MY COMPUTER",MineX.gui.window.mycomp)
+MineX.gui.menu.button("START","SHUTDOWN",os.shutdown)
+MineX.gui.menu.button("START","REBOOT",os.reboot)
+MineX.gui.menu.button("START","<BACK>",MineX.gui.panel.desktop)
+MineX.gui.panel.time()
+term.setCursorPos(1,1)
+print(MineX.gui.panel.window())
+MineX.gui.menu.print("START")
+repeat
+repeat
+MineX.gui.panel.time()
+
+os.startTimer(0.7)
+
+local a,b=os.pullEvent()
+MineX.var.enterevent=b
+until a=="key"
+term.setCursorPos(1,3)
+MineX.gui.selector(MineX.var.enterevent)
+
+MineX.gui.menu.print("START")
+until MineX.var.enterevent==28
+
+MineX.gui.menu.buttonPress("START")
+
+end
+
+------------------------------------------------------------------------------------------
+
+function MineX.gui.window.mycomp()
+term.setCursorPos(1,1)
+term.clear()
+local pcount=2
+MineX.gui.menu.v("MYCOMP")
+MineX.gui.menu.button("MYCOMP","ROM:C")
+
+for n=1,#drive+1 do
+
+if drive[n]=="drive" then
+
+MineX.gui.menu.button("MYCOMP","DRIVE:D")
+pcount=pcount+1
+
+end
+end
+MineX.var.enterevent=0
+MineX.gui.selectorOpen(pcount,1)
+MineX.gui.menu.button("MYCOMP","<BACK>")
+MineX.gui.panel.time()
+term.setCursorPos(1,1)
+print(MineX.gui.panel.window())
+MineX.gui.selector(MineX.var.enterevent)
+MineX.gui.menu.print("MYCOMP")
+repeat
+repeat
+MineX.gui.panel.time()
+
+os.startTimer(0.7)
+
+local a,b=os.pullEvent()
+MineX.var.enterevent=b
+until a=="key"
+term.setCursorPos(1,3)
+MineX.gui.selector(MineX.var.enterevent)
+
+MineX.gui.menu.print("MYCOMP")
+until MineX.var.enterevent==28
+if MineX.gui.selectorTableCurrent[1]==1 then
+MineX.gui.fs("C")
+end
+if MineX.gui.selectorTableCurrent[1]==#MineX.gui.menu.array["MYCOMP"].buttons-1 and MineX.gui.menu.array["MYCOMP"].buttons[2]=="DRIVE:D" then
+MineX.gui.fs("disk")
+end
+
+if MineX.gui.selectorTableCurrent[1]==#MineX.gui.menu.array["MYCOMP"].buttons then
+MineX.gui.window.mystart()
+end
+end
+
+------------------------------------------------------------------------------------------
+
+function MineX.gui.panel.start(mode,sel)
+
+if mode=="DESK" then
+MineX.gui.pixel.screen( "START", 2, 1, "")
+if sel~=nil then
+MineX.gui.pixel.edit("START" ,1,1,"START",1)
+end
+local a,b = term.getSize()
+term.setCursorPos(1,b)
+print(MineX.gui.panel.window())
+MineX.gui.pixel.print("START")
+end
+
+end

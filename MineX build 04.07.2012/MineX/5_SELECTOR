@@ -1,0 +1,72 @@
+function MineX.gui.selectorOpen(W,H)
+MineX.gui.selectorTable={W,H}
+MineX.gui.selectorTableCurrent={1,1}
+MineX.gui.selectorTablevars={}
+
+end
+
+function MineX.gui.selector(key)
+
+if MineX.gui.selectorTablevars[3] == nil then
+MineX.gui.selectorTablevars[3] = 18
+
+end
+
+if MineX.gui.selectorTablevars[1] == nil then
+MineX.gui.selectorTablevars[1] = 1
+
+end
+
+if MineX.gui.selectorTablevars[2] == nil then
+MineX.gui.selectorTablevars[2] = MineX.gui.selectorTablevars[3]
+end
+
+
+if key==200 then
+if (MineX.gui.selectorTableCurrent[1]-1)<=0 then
+MineX.gui.selectorTableCurrent[1]=MineX.gui.selectorTable[1]
+MineX.gui.selectorTablevars[1]=MineX.gui.selectorTable[1]-MineX.gui.selectorTablevars[3]
+MineX.gui.selectorTablevars[2]=MineX.gui.selectorTable[1]
+else
+MineX.gui.selectorTableCurrent[1]=MineX.gui.selectorTableCurrent[1]-1
+end
+end
+
+if key==208 then
+
+if (MineX.gui.selectorTableCurrent[1]+1)>MineX.gui.selectorTable[1] then
+MineX.gui.selectorTableCurrent[1]=1
+MineX.gui.selectorTablevars[2]=MineX.gui.selectorTablevars[3]
+MineX.gui.selectorTablevars[1]=1
+else
+MineX.gui.selectorTableCurrent[1]=MineX.gui.selectorTableCurrent[1]+1
+end
+end
+if key==205 then
+if (MineX.gui.selectorTableCurrent[2]+1)>MineX.gui.selectorTable[2] then
+MineX.gui.selectorTableCurrent[2]=1
+else
+MineX.gui.selectorTableCurrent[2]=MineX.gui.selectorTableCurrent[2]+1
+end
+end
+if key==203 then
+if (MineX.gui.selectorTableCurrent[2]-1)<=0 then
+MineX.gui.selectorTableCurrent[2]=MineX.gui.selectorTable[2]
+else
+MineX.gui.selectorTableCurrent[2]=MineX.gui.selectorTableCurrent[2]-1
+end
+end
+
+
+if MineX.gui.selectorTableCurrent[1] < MineX.gui.selectorTablevars[1] then
+MineX.gui.selectorTablevars[1] = MineX.gui.selectorTablevars[1]-1
+MineX.gui.selectorTablevars[2] = MineX.gui.selectorTablevars[2]-1
+end
+
+if MineX.gui.selectorTableCurrent[1] > MineX.gui.selectorTablevars[2] then
+MineX.gui.selectorTablevars[1] = MineX.gui.selectorTablevars[1]+1
+MineX.gui.selectorTablevars[2] = MineX.gui.selectorTablevars[2]+1
+
+end
+
+end
