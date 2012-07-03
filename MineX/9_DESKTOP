@@ -1,0 +1,30 @@
+MineX.gui.panel.label={}
+
+MineX.var.enterevent=0
+
+function MineX.gui.panel.desktop()
+MineX.var.enterevent=0
+MineX.gui.selectorOpen(4,4)
+MineX.gui.panel.start("DESK",1)
+MineX.gui.panel.time()
+term.setCursorPos(1,1)
+print(MineX.gui.panel.window())
+
+repeat
+repeat
+MineX.gui.panel.time()
+
+os.startTimer(0.7)
+
+local a,b=os.pullEvent()
+MineX.var.enterevent=b
+until a=="key"
+print(MineX.var.enterevent)
+MineX.gui.selector(MineX.var.enterevent)
+print(MineX.gui.selectorTableCurrent[1])
+print(MineX.gui.selectorTableCurrent[2])
+
+until MineX.var.enterevent==28
+print("os.exit(MineX)")
+MineX.gui.window.mycomp()
+end

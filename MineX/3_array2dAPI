@@ -1,0 +1,24 @@
+
+MineX.math.array2d={}
+MineX.math.array2d.table={}
+function MineX.math.array2d.create( name, s1 , s2)
+table.insert(MineX.math.array2d.table,name)
+MineX.math.array2d.table[name]={}
+for a=1,s1 do
+local drop={}
+for b=1,s2 do
+table.insert(drop,0)
+end
+table.insert(MineX.math.array2d.table[name],drop)
+end
+end
+
+function MineX.math.array2d.get( name,s1,s2,v )
+if v then
+	MineX.math.array2d.table[name][s1][s2]=v
+else
+
+	return MineX.math.array2d.table[name][s1][s2]
+
+end
+end
