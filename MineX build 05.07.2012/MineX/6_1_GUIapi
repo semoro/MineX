@@ -1,0 +1,125 @@
+function writeCenter(msg,y)
+
+	if #msg<50 then
+		term.setCursorPos((52-#msg)/2,y)
+		term.write(msg)
+	end
+	
+end
+
+function writeAsNSymbol(text,n,y)
+
+	if n >= 0 and n <= 50 then
+	
+		for i=1,#text do
+			term.setCursorPos(n,y-1+i)
+			write(text[i])
+		end
+		
+	end
+	
+end
+
+function buttonEachPos(bts,x,y,btsn,sel)
+	local i,event,key, butX, butY, len
+	xx,yy=term.getSize()
+	
+	if sel==nil then sel=1 end
+	
+		while true do
+		
+			for i=1,#bts do
+				butX = x[i]
+				butY = y[i]
+				len=#bts[i]+2
+				
+				if type(butX)=="string" then
+					if butX=="left" then butX=1
+					elseif butX=="center" then butX=(xx-len+2)/2
+					elseif butX=="right" then butX=xx-len+1 
+					else butX=1 end
+				end
+	
+				if type(butY)=="string" then
+					if butY=="top" then butY=1
+					elseif butY=="center" then butY=yy/2
+					elseif butY=="bottom" then butY=yy
+					else butY=1 end
+				end
+				
+				term.setCursorPos(butX,butY)
+				
+				if i==sel then term.write("["..bts[i].."]") else term.write(" "..bts[i].." ") end
+				
+			end
+			
+		event,key=os.pullEvent("key")
+		
+		if key==203 and sel>1 then sel=sel-1
+		elseif key==205 and sel<#bts then sel=sel+1
+		elseif key==28 then break end
+		
+	end
+	
+	if btsn==nil then return bts[sel] else return btsn[sel] end
+	
+end
+
+function progresBar(pos,x,y,len)
+	local i, procentAsSymbol, progress
+	local progres = ""
+	procentAsSymbol = math.modf (100/(len-2))
+	progress = math.modf (pos/procentAsSymbol)
+	
+	for i=1,len-2 do
+		if i <= progress then progres = progres.."|" else progres = progres.." " end
+	end
+	
+	term.setCursorPos(x,y)
+	write("["..progres.."]")
+end
+
+function buttonAllPos(bts,x,y,btsn,sel)
+	local i,event,key,xx,yy
+	local len=#bts*2
+	xx,yy=term.getSize()
+	
+	for i=1,#bts do len=len+#bts[i] end
+	
+	if type(x)=="string" then
+		if x=="left" then x=1
+		elseif x=="center" then x=(xx-len+2)/2
+		elseif x=="right" then x=xx-len+1 
+		else x=1 end 
+	end
+	
+	if type(y)=="string" then
+		if y=="top" then y=1
+		elseif y=="center" then y=yy/2
+		elseif y=="bottom" then y=yy 
+		else y=1 end 
+	end
+	
+	if sel==nil then sel=1 end
+	
+	while true do
+		term.setCursorPos(x,y)
+		term.clearLine()
+		
+		for i=1,#bts do
+			if i==sel then term.write("["..bts[i].."]") else term.write(" "..bts[i].." ") end
+		end
+		
+		if sel=="break" then break end
+		
+		event,key=os.pullEvent("key")
+		
+		if key==203 and sel>1 then sel=sel-1
+		elseif key==205 and sel<#bts then sel=sel+1
+		elseif key==28 then break end
+		
+	end
+	
+	if btsn==nil then return bts[sel] else return btsn[sel] end
+	
+end

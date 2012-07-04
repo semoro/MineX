@@ -1,0 +1,75 @@
+osVersion="MineX ALPHA"
+arg={...}
+MineX={}
+
+
+-- function progresBar(pos,x,y,len)
+	-- local i, procentAsSymbol, progress
+	-- local progres = ""
+	-- procentAsSymbol = math.modf (100/(len))
+	-- progress = math.modf (pos/procentAsSymbol)
+	
+	-- for i=1,len do
+		-- if i <= progress then progres = progres.."|" else progres = progres.." " end
+	-- end
+	
+	-- term.setCursorPos(x,y)
+	-- term.clearLine()
+	-- write(progres)
+-- end
+
+function MineX.start(mode)
+print(osVersion)
+
+if mode=="BRC" then
+print("MineX Has Filed To Load")
+sleep(10)
+
+elseif mode=="NORM" then
+
+local sDir = shell.dir()
+
+sDir = shell.resolve("MineX" )
+
+
+-- Sort into dirs/files, and calculate column count
+local tAll = fs.list( sDir )
+local tFiles = {}
+local tDirs = {}
+local msize=0
+local prc=0
+for n, sItem in pairs( tAll ) do
+	if string.sub( sItem, 1, 1 ) ~= "." then
+		local sPath = fs.combine( sDir, sItem )
+		if fs.isDir( sPath ) then
+			table.insert( tDirs, sItem )
+		else
+			table.insert( tFiles, sItem )
+		end
+	end
+end
+table.sort( tDirs )
+table.sort( tFiles )
+-- for a,b in pairs(tFiles) do
+-- msize=msize+fs.getSize("./MineX/"..b)
+-- end
+for a,b in pairs(tFiles) do
+sleep(0.1)
+if b=="Main" then
+print("Load Complite")
+sleep(2)
+dofile("./MineX/"..b)
+sleep(10)
+os.shutdown()
+end
+-- prc=prc+math.ceil((fs.getSize("./MineX/"..b)*100)/msize)
+-- progresBar(prc,1,18,50)
+-- term.setCursorPos(1,1)
+dofile("./MineX/"..b)
+print("file loaded "..b)
+end
+end
+end
+
+
+MineX.start("NORM")

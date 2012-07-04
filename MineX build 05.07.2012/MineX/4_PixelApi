@@ -1,0 +1,63 @@
+MineX.gui={}
+MineX.gui.pixel={}
+MineX.gui.pixel.table={}
+
+
+function MineX.gui.pixel.screen( name, l1, l2, dcr)
+table.insert(MineX.gui.pixel.table,name)
+MineX.gui.pixel.table[name]={}
+for a=1,l1 do
+local drop={}
+for b=1,l2 do
+if dcr~=nil then
+table.insert(drop,{255,255,255,dcr,0})
+else
+table.insert(drop,{255,255,255,"*",0})
+end
+end
+table.insert(MineX.gui.pixel.table[name],drop)
+end
+end
+
+function MineX.gui.pixel.edit(name ,l1,l2, txt , sel , r , g , b)
+if name then
+if r and g and b then
+MineX.gui.pixel.table[name][l1][l2][4]=txt
+if sel then
+MineX.gui.pixel.table[name][l1][l2][5]=sel
+end
+MineX.gui.pixel.table[name][l1][l2][1]=r
+MineX.gui.pixel.table[name][l1][l2][2]=g
+MineX.gui.pixel.table[name][l1][l2][3]=b
+else
+MineX.gui.pixel.table[name][l1][l2][4]=txt
+if sel then
+MineX.gui.pixel.table[name][l1][l2][5]=sel
+end
+end
+end
+end
+
+function MineX.gui.pixel.print(name)
+
+
+for c=1,#MineX.gui.pixel.table[name][1] do
+local str=""
+for n=1,#MineX.gui.pixel.table[name] do
+if MineX.gui.pixel.table[name][n][c][5]==1 then
+str=str.."["..MineX.gui.pixel.table[name][n][c][4]
+elseif n-1~=0 and MineX.gui.pixel.table[name][n-1][c][5]==1 then
+str=str.."]"..MineX.gui.pixel.table[name][n][c][4]
+else
+str=str.." "..MineX.gui.pixel.table[name][n][c][4]
+end
+
+end
+
+io.write(str)
+end
+end
+
+
+print("PIXEL API")
+

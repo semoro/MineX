@@ -1,0 +1,394 @@
+function MineX.util.findfromback(arg,w)
+for n = 1,#arg do
+local a=#arg-n
+if string.sub (arg, a,a+#w-1)==w then
+return a;
+end
+end
+end
+
+
+
+function MineX.gui.window.input(text,inpe)
+term.setCursorBlink(true)
+local razd = ""
+term.clear()
+for i = 1,49 do
+razd = razd.."-"
+end
+pwd = inpe
+term.setCursorPos(1,8)
+write(razd)
+term.setCursorPos(1,9)
+write(text..":")
+write(pwd)
+term.setCursorPos(1,10)
+write(razd)
+term.setCursorPos(#pwd+#text+2,9)
+msg=""
+while true do
+event,key=os.pullEvent()
+if event=="char" then
+write(key)
+pwd=pwd..key
+elseif event=="key" then
+if key==14 and #pwd>0 then
+term.setCursorPos(#pwd+#text,9)
+pwd=string.sub(pwd,1,#pwd-1)
+term.clear()
+term.setCursorPos(1,8)
+write(razd)
+term.setCursorPos(1,9)
+write(text..":")
+write(pwd)
+term.setCursorPos(1,10)
+write(razd)
+term.setCursorPos(#pwd+#text+2,9)
+elseif key==28 then break end
+end
+end
+msg = pwd
+term.setCursorBlink(false)
+return msg
+end
+
+
+function MineX.gui.panel.fspath(path)
+local drop=""
+local a,b = term.getSize()
+path=string.sub(path,2)
+
+path=string.gsub (path, " ", "")
+
+path="C:\\"..path.."\\"
+local lenpath=#path
+for n=1,(a/2-math.ceil((lenpath)/2)) do
+drop=drop.."-"
+end
+
+drop=drop..path
+for n=1,(a/2-math.floor((lenpath)/2)) do
+drop=drop.."-"
+end
+
+return drop;
+
+end
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+function MineX.gui.fs(path)
+-- Get all the files in the directory
+local sDir = shell.dir()
+if path ~= nil then
+	sDir = shell.resolve( path )
+end
+
+-- Sort into dirs/files, and calculate column count
+local tAll = fs.list( sDir )
+local tFiles = {}
+local tDirs = {}
+
+for n, sItem in pairs( tAll ) do
+	if string.sub( sItem, 1, 1 ) ~= "." then
+		local sPath = fs.combine( sDir, sItem )
+		if fs.isDir( sPath ) then
+			table.insert( tDirs, sItem )
+		else
+			table.insert( tFiles, sItem )
+		end
+	end
+end
+table.sort( tDirs )
+table.sort( tFiles )
+-------------------------------------------------------------------------------------
+local function CopyPress(path)
+MineX.var.saveFile = true
+MineX.var.copyPastePath = path
+end
+-------------------------------------------------------------------------------------
+local function RunPress(arg)
+local tProgramStack = {}
+local tEnv = {
+	["shell"] = shell,
+}
+term.clear()
+term.setCursorPos(1,1)
+	local sPath = shell.resolveProgram( arg )
+	if sPath ~= nil then
+		tProgramStack[#tProgramStack + 1] = sPath
+   		local result = os.run( tEnv, sPath)
+		tProgramStack[#tProgramStack] = nil
+		if result==false then
+		print("Program error")
+		    		term.write( "Press any key to continue" )
+    		os.pullEvent( "key" )
+
+end
+MineX.gui.fs(string.sub (arg,1, MineX.util.findfromback(arg,"\\")-1))
+		end
+		end
+-------------------------------------------------------------------------------------
+local function CutPress(path)
+MineX.var.saveFile = false
+MineX.var.copyPastePath = path
+end
+-------------------------------------------------------------------------------------
+local function DelitePress(arg)
+fs.delete(arg)
+sleep(0.1)
+MineX.gui.fs(path)
+end
+
+
+
+local function RenamePress(arg)
+local sDir = shell.resolve( string.sub (arg,1, MineX.util.findfromback(arg,"\\")-1).."\\"..MineX.gui.window.input("Type new name",string.sub (arg, MineX.util.findfromback(arg,"\\")+1)) )
+fs.move(arg,sDir)
+MineX.gui.fs(string.sub (arg,1, MineX.util.findfromback(arg,"\\")-1))
+
+end
+
+
+
+local function NewPress(arg)
+
+local function PastePress(path)
+path=path..string.sub (MineX.var.copyPastePath, MineX.util.findfromback(MineX.var.copyPastePath,"\\"))
+if MineX.var.copyPastePath ~= nil and MineX.var.copyPastePath ~= "" and MineX.var.copyPastePath~=path then
+print(MineX.var.copyPastePath)
+print(path)
+if MineX.var.saveFile then
+fs.copy( shell.resolve(MineX.var.copyPastePath), shell.resolve(path) )
+else
+fs.move( shell.resolve(MineX.var.copyPastePath), shell.resolve(path) )
+
+MineX.var.copyPastePath = nil
+MineX.var.saveFile = false
+end
+sleep(0.1)
+
+end
+MineX.gui.fs(string.sub (path,1, MineX.util.findfromback(path,"\\")))
+end
+-------------------------------------------------------------------------------------
+local function FilePress(filearg)
+
+
+	local file = io.open( filearg, "w" )
+	if file then
+		
+			file:write( "" .. "\n" )
+		
+		file:close()
+		
+	end
+	
+MineX.gui.fs(string.sub(filearg,1,#filearg-8))
+
+end
+
+local function FolderPress(filearg)
+local sDir
+sDir = shell.resolve( filearg )
+fs.makeDir(sDir)
+MineX.gui.fs(string.sub(filearg,1,#filearg-10))
+
+end
+
+-------------------------------------------------------------------------------------
+MineX.gui.selectorOpen(1,3)
+MineX.gui.menu.h("NEW")
+MineX.gui.menu.button("NEW","FILE",FilePress,arg.."\\newfile")
+MineX.gui.menu.button("NEW","FOLDER",FolderPress,arg.."\\newfolder")
+MineX.gui.menu.button("NEW","PASTE",PastePress,arg)
+MineX.gui.menu.button("NEW","<BACK>",MineX.gui.fs,arg)
+MineX.var.enterevent=0
+
+MineX.gui.panel.time()
+term.clear()
+term.setCursorPos(1,1)
+print(MineX.gui.panel.fspath(path))
+MineX.gui.menu.print("NEW")
+repeat
+repeat
+
+MineX.gui.panel.time()
+
+os.startTimer(0.7)
+
+local a,b=os.pullEvent()
+MineX.var.enterevent=b
+
+until a=="key"
+
+
+
+term.clear()
+term.setCursorPos(1,1)
+print(MineX.gui.panel.fspath(path))
+
+MineX.gui.selector(MineX.var.enterevent)
+term.setCursorPos(1,3)
+write(MineX.gui.menu.get("NEW"))
+
+
+
+until MineX.var.enterevent==28
+MineX.gui.menu.buttonPress("NEW")
+end
+
+MineX.gui.selectorOpen(#tDirs+#tFiles+2,5)
+local x,y = term.getSize()
+MineX.gui.menu.v("FS",y-5)
+
+
+for n=1,(#tDirs+#tFiles+1) do
+if n>#tDirs then
+MineX.gui.menu.button("FS",tFiles[n-#tDirs])
+else
+MineX.gui.menu.button("FS",tDirs[n])
+end
+end
+if #tDirs>=1 then
+MineX.gui.menu.h("DIR")
+MineX.gui.menu.button("DIR","DELITE",DelitePress,path.."\\"..tDirs[1])
+
+MineX.gui.menu.button("DIR","RENAME",RenamePress,path.."\\"..tDirs[1])
+
+--MineX.gui.menu.button("DIR","COPY",CopyPress,path.."\\"..tFiles[1])
+--MineX.gui.menu.button("DIR","CUT",CutPress,path.."\\") 
+else
+if #tFiles>=1 then
+MineX.gui.menu.h("FILE")
+MineX.gui.menu.button("FILE","DELITE",DelitePress,path.."\\"..tFiles[1])
+
+MineX.gui.menu.button("FILE","RENAME",RenamePress,path.."\\"..tFiles[1])
+MineX.gui.menu.button("FILE","RUN",RunPress,path.."\\"..tFiles[1])
+MineX.gui.menu.button("FILE","COPY",CopyPress,path.."\\"..tFiles[1])
+MineX.gui.menu.button("FILE","CUT",CutPress,path.."\\"..tFiles[1])
+end
+end
+
+MineX.gui.menu.button("FS","<NEW>")
+MineX.gui.menu.button("FS","<BACK>")
+
+MineX.var.enterevent=0
+
+MineX.gui.panel.time()
+term.clear()
+term.setCursorPos(1,1)
+print(MineX.gui.panel.fspath(path))
+
+
+MineX.gui.menu.print("FS")
+
+local x,y = term.getSize()
+term.setCursorPos(1,y)
+
+
+if #tDirs>=1 then
+write(MineX.gui.menu.get("DIR"))
+
+else
+if #tFiles>=1 then
+write(MineX.gui.menu.get("FILE"))
+end
+end
+repeat
+repeat
+
+MineX.gui.panel.time()
+
+os.startTimer(0.7)
+
+local a,b=os.pullEvent()
+MineX.var.enterevent=b
+
+until a=="key"
+
+term.clear()
+term.setCursorPos(1,1)
+print(MineX.gui.panel.fspath(path))
+
+MineX.gui.selector(MineX.var.enterevent)
+
+MineX.gui.menu.print("FS")
+
+local x,y = term.getSize()
+
+term.setCursorPos(1,y)
+
+if MineX.gui.selectorTableCurrent[1]<=#tDirs then
+if #tDirs>=1 then
+MineX.gui.menu.h("DIR")
+MineX.gui.menu.button("DIR","DELITE",DelitePress,path.."\\"..tDirs[MineX.gui.selectorTableCurrent[1]])
+MineX.gui.menu.button("DIR","RENAME",RenamePress,path.."\\"..tDirs[MineX.gui.selectorTableCurrent[1]])
+
+--MineX.gui.menu.button("DIR","COPY",CopyPress,path.."\\"..tDirs[MineX.gui.selectorTableCurrent[1]])
+--MineX.gui.menu.button("DIR","CUT",CutPress,path.."\\"..tDirs[MineX.gui.selectorTableCurrent[1]]) 
+write(MineX.gui.menu.get("DIR"))
+
+if MineX.var.enterevent==29 then
+MineX.gui.menu.buttonPress("DIR")
+end
+end
+elseif MineX.gui.selectorTableCurrent[1]<=MineX.gui.selectorTable[1]-2 then
+
+if #tFiles>=1 then
+MineX.gui.menu.h("FILE")
+MineX.gui.menu.button("FILE","DELITE",DelitePress,path.."\\"..tFiles[MineX.gui.selectorTableCurrent[1]-#tDirs])
+MineX.gui.menu.button("FILE","RENAME",RenamePress,path.."\\"..tFiles[MineX.gui.selectorTableCurrent[1]-#tDirs])
+MineX.gui.menu.button("FILE","RUN",RunPress,path.."\\"..tFiles[MineX.gui.selectorTableCurrent[1]-#tDirs])
+MineX.gui.menu.button("FILE","COPY",CopyPress,path.."\\"..tFiles[MineX.gui.selectorTableCurrent[1]-#tDirs])
+MineX.gui.menu.button("FILE","CUT",CutPress,path.."\\"..tFiles[MineX.gui.selectorTableCurrent[1]-#tDirs])
+write(MineX.gui.menu.get("FILE"))
+
+if MineX.var.enterevent==29 then
+MineX.gui.menu.buttonPress("FILE")
+end
+end
+
+end
+
+until MineX.var.enterevent==28
+
+if MineX.gui.selectorTableCurrent[1]==#tDirs+#tFiles+2 or MineX.gui.selectorTableCurrent[1]==#tDirs+#tFiles+1 then
+if MineX.gui.selectorTableCurrent[1]==#tDirs+#tFiles+2 then
+if path~="C" then
+
+
+MineX.gui.fs(string.sub (path, 1,MineX.util.findfromback(path,"\\")-1))
+else
+
+MineX.gui.window.mycomp()
+end
+
+end
+if MineX.gui.selectorTableCurrent[1]==#tDirs+#tFiles+1 then
+NewPress(path)
+end
+else
+
+if MineX.gui.selectorTableCurrent[1]>#tDirs then
+MineX.gui.edit(path.."\\"..tFiles[MineX.gui.selectorTableCurrent[1]-#tDirs])
+MineX.gui.fs(path)
+else
+MineX.gui.fs(path.."\\"..tDirs[MineX.gui.selectorTableCurrent[1]])
+end
+end
+
+end
+
+
+
+
+
+
+
+
+
+
+
+

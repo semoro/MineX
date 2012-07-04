@@ -1,0 +1,121 @@
+MineX.gui.menu={}
+MineX.gui.menu.array={}
+MineX.gui.menu.functions={}
+
+
+function MineX.gui.menu.h(name)
+
+if name~="" then
+MineX.gui.menu.functions[name]={}
+MineX.gui.menu.array[name]={"h",buttons={}}
+
+
+end
+
+
+end
+
+
+
+function MineX.gui.menu.v(name,maxButt)
+
+if name~="" then
+MineX.gui.menu.functions[name]={}
+MineX.gui.menu.array[name]={"v",buttons={},aaa,bbb}
+
+MineX.gui.menu.array[name].aaa = 1
+MineX.gui.selectorTablevars[1]=1
+if maxButt ~= nil then
+MineX.gui.menu.array[name].bbb = maxButt
+
+MineX.gui.selectorTablevars[2]= maxButt
+else
+MineX.gui.menu.array[name].bbb = 18
+end
+end
+MineX.gui.selectorTablevars[3]=MineX.gui.menu.array[name].bbb
+end
+
+
+function MineX.gui.menu.button(name,text,func,arg)
+local drop = {}
+if text~=nil then
+if name~=nil then
+if func~=nil then
+
+
+
+
+MineX.gui.menu.functions[name][text]={func,arg}
+
+end
+table.insert(MineX.gui.menu.array[name].buttons,text)
+end
+end
+
+end
+
+function MineX.gui.menu.buttonPress(name)
+if MineX.gui.menu.array[name][1]=="h" then
+
+MineX.gui.menu.functions[name][MineX.gui.menu.array[name].buttons[MineX.gui.selectorTableCurrent[2]]][1](MineX.gui.menu.functions[name][MineX.gui.menu.array[name].buttons[MineX.gui.selectorTableCurrent[2]]][2])
+
+
+
+end
+
+if MineX.gui.menu.array[name][1]=="v" then
+
+MineX.gui.menu.functions[name][MineX.gui.menu.array[name].buttons[MineX.gui.selectorTableCurrent[1]]][1](MineX.gui.menu.functions[name][MineX.gui.menu.array[name].buttons[MineX.gui.selectorTableCurrent[1]]][2])
+
+
+
+
+
+end
+end
+
+function MineX.gui.menu.print(name)
+print(MineX.gui.menu.get(name))
+end
+
+function MineX.gui.menu.get(name)
+local str="",a,b
+
+
+
+
+if MineX.gui.menu.array[name][1]=="h" then
+for n=1,#MineX.gui.menu.array[name].buttons do
+if n==MineX.gui.selectorTableCurrent[2] then
+str=str.."["..MineX.gui.menu.array[name].buttons[n].."]"
+else
+str=str.." "..MineX.gui.menu.array[name].buttons[n].." "
+end
+end
+return str;
+end
+
+if MineX.gui.menu.array[name][1]=="v" then
+if #MineX.gui.menu.array[name].buttons > MineX.gui.menu.array[name].bbb then
+
+b = MineX.gui.selectorTablevars[2]
+a = MineX.gui.selectorTablevars[1]
+else
+
+a,b = 1,#MineX.gui.menu.array[name].buttons
+end
+for n=a,b do
+if n==MineX.gui.selectorTableCurrent[1] then
+str=str.."["..MineX.gui.menu.array[name].buttons[n].."]".." \n"
+else
+str=str.." "..MineX.gui.menu.array[name].buttons[n].." ".." \n"
+end
+end
+
+return str;
+
+
+
+end
+end
